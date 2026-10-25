@@ -1,0 +1,1215 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Meal PrepMaster Deluxe</title>
+<style>
+:root {
+  --bg: #f6f5fb;
+  --card: #ffffff;
+  --ink: #1b1930;
+  --muted: #66647f;
+  --line: #e4e2f0;
+  --danger: #c62828;
+  --indigo: #2b2a6b;
+  --shadow: 0 10px 28px -10px rgba(60, 50, 130, 0.22);
+
+  --c-tomato: #d63a22; --t-tomato: #ffe9e4; --f-tomato: #a92613;
+  --c-peach:  #f2812f; --t-peach:  #ffe8d6; --f-peach:  #9a4208;
+  --c-lemon:  #f5c022; --t-lemon:  #fff3c9; --f-lemon:  #725300;
+  --c-basil:  #1f8a4c; --t-basil:  #def5e8; --f-basil:  #15693a;
+  --c-aqua:   #0b7f8d; --t-aqua:   #d8f3f6; --f-aqua:   #09606b;
+  --c-blue:   #4452c9; --t-blue:   #e5e8ff; --f-blue:   #3340a8;
+  --c-plum:   #8a35b0; --t-plum:   #f3e3fa; --f-plum:   #6b268e;
+
+  --green: var(--c-basil);
+  --k: var(--c-blue); --kt: var(--t-blue); --kf: var(--f-blue); --ko: #fff;
+}
+.dark {
+  --bg: #13111f;
+  --card: #1e1b2e;
+  --ink: #f4f3fb;
+  --muted: #a5a3bd;
+  --line: #34304b;
+  --danger: #ff8a80;
+  --shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.6);
+
+  --t-tomato: rgba(255, 138, 115, 0.16); --f-tomato: #ff9c87;
+  --t-peach:  rgba(255, 174, 120, 0.16); --f-peach:  #ffb685;
+  --t-lemon:  rgba(255, 215, 90, 0.16);  --f-lemon:  #ffd75a;
+  --t-basil:  rgba(95, 214, 141, 0.16);  --f-basil:  #6fdc9a;
+  --t-aqua:   rgba(94, 212, 226, 0.16);  --f-aqua:   #6ddbe8;
+  --t-blue:   rgba(160, 171, 255, 0.16); --f-blue:   #a9b3ff;
+  --t-plum:   rgba(216, 160, 242, 0.16); --f-plum:   #dcaaf4;
+}
+
+:is(.chip:nth-child(6n+1), .badge.sug, .recipe-card[data-c="italian"], .group-title[data-cat="spices"],
+    .daygrid > .card:nth-child(7n+1), .bottom-btn[data-tab="recipes"]) {
+  --k: var(--c-tomato); --kt: var(--t-tomato); --kf: var(--f-tomato); --ko: #fff;
+}
+:is(.daygrid > .card:nth-child(7n+2), .recipe-card[data-c="asian"]) {
+  --k: var(--c-peach); --kt: var(--t-peach); --kf: var(--f-peach); --ko: #2e1400;
+}
+:is(.chip:nth-child(6n+2), .badge[data-d="gf"], .recipe-card[data-c="creative"], .group-title[data-cat="pantry"],
+    .slot[data-m="breakfast"], .daygrid > .card:nth-child(7n+3), .bottom-btn[data-tab="pantry"]) {
+  --k: var(--c-lemon); --kt: var(--t-lemon); --kf: var(--f-lemon); --ko: #2e2300;
+}
+:is(.chip:nth-child(6n+3), .badge[data-d="veg"], .recipe-card[data-c="quick"], .group-title[data-cat="produce"],
+    .slot[data-m="lunch"], .daygrid > .card:nth-child(7n+4), .bottom-btn[data-tab="shopping"]) {
+  --k: var(--c-basil); --kt: var(--t-basil); --kf: var(--f-basil); --ko: #fff;
+}
+:is(.chip:nth-child(6n+4), .badge[data-d="vegan"], .recipe-card[data-c="med"], .group-title[data-cat="other"],
+    .daygrid > .card:nth-child(7n+5)) {
+  --k: var(--c-aqua); --kt: var(--t-aqua); --kf: var(--f-aqua); --ko: #fff;
+}
+:is(.chip:nth-child(6n+5), .recipe-card[data-c="classic"], .group-title[data-cat="dairy"],
+    .slot[data-m="dinner"], .daygrid > .card:nth-child(7n+6), .bottom-btn[data-tab="weekly"]) {
+  --k: var(--c-blue); --kt: var(--t-blue); --kf: var(--f-blue); --ko: #fff;
+}
+:is(.chip:nth-child(6n), .badge[data-d="lowcarb"], .recipe-card[data-c="dessert"], .group-title[data-cat="dessert"],
+    .daygrid > .card:nth-child(7n), .bottom-btn[data-tab="community"]) {
+  --k: var(--c-plum); --kt: var(--t-plum); --kf: var(--f-plum); --ko: #fff;
+}
+
+body, body[data-tab="recipes"] { --accent: var(--c-tomato); --accent-tint: var(--t-tomato); --accent-fg: var(--f-tomato); --on-accent: #fff; }
+body[data-tab="weekly"]    { --accent: var(--c-blue);  --accent-tint: var(--t-blue);  --accent-fg: var(--f-blue);  --on-accent: #fff; }
+body[data-tab="shopping"]  { --accent: var(--c-basil); --accent-tint: var(--t-basil); --accent-fg: var(--f-basil); --on-accent: #fff; }
+body[data-tab="pantry"]    { --accent: var(--c-lemon); --accent-tint: var(--t-lemon); --accent-fg: var(--f-lemon); --on-accent: #2e2300; }
+body[data-tab="community"] { --accent: var(--c-plum);  --accent-tint: var(--t-plum);  --accent-fg: var(--f-plum);  --on-accent: #fff; }
+
+[dir="rtl"] { direction: rtl; text-align: right; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  transition: background 0.2s, color 0.2s;
+  padding-bottom: calc(95px + env(safe-area-inset-bottom));
+}
+h2, h3, .brand { font-family: ui-rounded, "SF Pro Rounded", "Avenir Next", "Nunito", system-ui, sans-serif; letter-spacing: -0.01em; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; border: 0; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+header {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+header::before {
+  content: ""; display: block; height: 5px;
+  background: linear-gradient(90deg,
+    var(--c-tomato) 0 16.66%, var(--c-peach) 0 33.33%, var(--c-lemon) 0 50%,
+    var(--c-basil) 0 66.66%, var(--c-blue) 0 83.33%, var(--c-plum) 0);
+}
+.top .row { flex-wrap: nowrap; gap: 6px; }
+.brand { white-space: nowrap; }
+@media (max-width: 480px) { .brand { font-size: 17px; gap: 6px; } .brand small { display: none; } .top { padding: 8px 12px; } }
+.top { max-width: 1100px; margin: auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+.brand { font-size: 20px; font-weight: 850; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+.brand-icon { background: var(--c-tomato); color: #fff; padding: 6px 8px; border-radius: 12px; font-size: 16px; transform: rotate(-6deg); }
+.brand small { font-size: 10px; background: var(--c-lemon); color: #2e2300; padding: 2px 8px; border-radius: 99px; font-weight: 800; letter-spacing: 0.3px; }
+
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+  background: color-mix(in srgb, var(--card) 95%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+  padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
+  display: flex; justify-content: space-around;
+}
+.bottom-btn {
+  background: transparent; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 14px; transition: background 0.2s, color 0.2s;
+}
+.bottom-btn .icon { font-size: 19px; transition: transform 0.2s; }
+.bottom-btn.active { color: var(--kf); background: var(--kt); }
+.bottom-btn.active .icon { transform: translateY(-2px) scale(1.12); }
+
+main { max-width: 1100px; margin: 16px auto; padding: 0 16px; }
+.tab { display: none; }
+.tab.active { display: block; }
+
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.spread { justify-content: space-between; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+  padding: 20px; box-shadow: var(--shadow); margin-bottom: 20px;
+}
+.hint { color: var(--muted); font-size: 13px; }
+
+.hero { background: var(--indigo); color: #fff; border: 0; padding: 24px; }
+.hero h2 { font-size: clamp(24px, 5vw, 34px); font-weight: 850; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 4px; max-width: 18ch; }
+.hero input, .hero select { background: #fff; color: #1b1930; border-color: transparent; }
+.hero .iconbtn { color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.hero .iconbtn:hover { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.hero .filters label { color: rgba(255, 255, 255, 0.82); }
+.hero .primary-btn { background: var(--c-lemon); color: #2e2300; box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.35); }
+.hero .primary-btn:hover { background: #ffd23f; }
+.hero :focus-visible { outline-color: var(--c-lemon); }
+
+.inputrow { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+.inputrow input { flex: 1; }
+
+.primary-btn {
+  background: var(--accent); color: var(--on-accent); font-weight: 800; padding: 12px 20px;
+  border-radius: 14px; width: 100%; font-size: 15px;
+  box-shadow: 0 6px 14px -6px var(--accent);
+  transition: transform 0.1s, filter 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.primary-btn:hover { filter: brightness(0.93); }
+.primary-btn:active { transform: scale(0.98); }
+.primary-btn.inline { width: auto; padding: 8px 14px; font-size: 13px; }
+
+.iconbtn {
+  background: transparent; color: var(--muted); padding: 8px 12px; border-radius: 12px;
+  font-weight: 700; border: 1.5px solid var(--line);
+}
+.iconbtn:hover { background: var(--accent-tint); color: var(--accent-fg); border-color: transparent; }
+.iconbtn.danger { color: var(--danger); }
+.iconbtn.small { padding: 2px 8px; font-size: 12px; }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.chip {
+  background: var(--kt); color: var(--kf); border: 2px solid transparent; border-radius: 99px;
+  padding: 6px 14px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+  transition: transform 0.12s, background 0.15s;
+}
+.chip:hover { transform: translateY(-1px); }
+.chip.selected { background: var(--k); color: var(--ko); }
+
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; }
+.filters label, .field label { display: grid; gap: 4px; color: var(--muted); font-size: 13px; font-weight: 700; }
+input, select, textarea {
+  background: var(--bg); color: var(--ink); border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 10px 12px; width: 100%;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+textarea { min-height: 90px; resize: vertical; }
+.field { display: grid; gap: 12px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+.recipe-card {
+  background: var(--card); border: 1px solid var(--line); border-top: 6px solid var(--k);
+  border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column;
+}
+.recipe-card img, .noimg { width: 100%; height: 165px; object-fit: cover; background: var(--kt); }
+.noimg { display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.recipe-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+.recipe-body h3 { margin: 0 0 8px; font-size: 18px; font-weight: 800; }
+.recipe-meta { color: var(--kf); font-size: 12.5px; font-weight: 700; margin-bottom: 10px; }
+.recipe-ings { font-size: 13px; margin-bottom: 14px; flex: 1; color: var(--muted); line-height: 1.5; }
+.recipe-ings b { color: var(--ink); }
+.recipe-card .primary-btn { background: var(--k); color: var(--ko); box-shadow: 0 6px 14px -6px var(--k); }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.badge { font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: var(--kt); color: var(--kf); }
+.badge.sug { background: var(--k); color: var(--ko); }
+
+.daygrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.daygrid > .card { border-top: 6px solid var(--k); margin-bottom: 0; }
+.daygrid > .card h3 { color: var(--kf); font-size: 18px; text-transform: capitalize; }
+.slot { border-inline-start: 5px solid var(--k); background: var(--kt); padding: 10px 12px; border-radius: 12px; margin: 8px 0; }
+.slot .hint { color: var(--kf); }
+.slot .iconbtn { background: var(--card); }
+
+.group-title {
+  margin: 18px 0 4px; font-size: 14px; font-weight: 800; color: var(--kf);
+  border-inline-start: 5px solid var(--k); padding-inline-start: 8px;
+}
+.shop-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.shop-row label { flex: 1; cursor: pointer; }
+.shop-row.done label { text-decoration: line-through; color: var(--muted); }
+
+.modal { position: fixed; inset: 0; background: rgba(27, 25, 70, 0.62); backdrop-filter: blur(4px); z-index: 50; display: none; align-items: center; justify-content: center; padding: 16px; }
+.modal.open { display: flex; }
+.modalbox {
+  background: var(--card); border-radius: 24px; border-top: 8px solid var(--accent); padding: 22px 24px 24px;
+  width: min(550px, 100%); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+}
+#modalBody { overflow-y: auto; padding-inline-end: 4px; }
+.modalbox ol, .modalbox ul { padding-inline-start: 20px; line-height: 1.6; }
+.modalbox li { margin-bottom: 8px; }
+.modalbox li::marker { color: var(--accent-fg); font-weight: 800; }
+.timer-display { font-size: 52px; font-weight: 850; text-align: center; font-variant-numeric: tabular-nums; margin: 12px 0; color: var(--accent-fg); }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: start; padding: 8px; color: var(--accent-fg); font-size: 13px; border-bottom: 2px solid var(--accent); }
+td { padding: 9px 8px; border-bottom: 1px solid var(--line); }
+tbody tr:hover td { background: var(--accent-tint); }
+
+.toast {
+  position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); inset-inline-end: 20px;
+  background: var(--indigo); color: #fff; padding: 12px 18px; border-radius: 14px; z-index: 60;
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.5); font-weight: 700; display: none;
+  border-inline-start: 6px solid var(--c-lemon);
+}
+@media (max-width: 600px) { .toast { inset-inline: 16px; text-align: center; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">🍴</span> Meal PrepMaster <small>DELUXE</small>
+    </div>
+    <div class="row">
+      <select id="langSelect" aria-label="Language" style="width:auto; padding:6px 10px; font-size:12px; font-weight:700;">
+        <option value="en">EN</option>
+        <option value="de">DE</option>
+        <option value="fr">FR</option>
+        <option value="it">IT</option>
+        <option value="tr">TR</option>
+        <option value="ar">AR</option>
+      </select>
+      <button class="iconbtn" id="btnTimer" data-t-label="timerTitle">⏱</button>
+      <button class="iconbtn" id="btnTheme" data-t-label="theme">🌙</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="tab active" id="tab-recipes">
+    <div class="card hero">
+      <div style="font-size:11px; font-weight:800; color:var(--c-lemon); letter-spacing:0.3px;" data-t="subtitle"></div>
+      <h2 style="margin-top:4px;" data-t="heroTitle"></h2>
+
+      <div class="inputrow">
+        <input id="ingredientInput" data-t-ph="ingPh" autocomplete="off">
+        <button class="iconbtn" id="btnVoice" data-t-label="voice">🎙️</button>
+      </div>
+
+      <div style="margin-top:14px; font-size:12px; font-weight:700; color:rgba(255,255,255,0.82);" data-t="quickSelect"></div>
+      <div class="chips" id="quickTags"></div>
+
+      <button class="primary-btn" id="btnGenerate" style="margin-top:16px;">
+        ✨ <span data-t="suggestBtn"></span> (<span id="selectedCount">0</span>)
+      </button>
+
+      <div class="filters">
+        <label><span data-t="dietLabel"></span><select id="diet"></select></label>
+        <label><span data-t="timeLabel"></span><select id="time"></select></label>
+        <label><span data-t="catLabel"></span><select id="cuisine"></select></label>
+      </div>
+    </div>
+
+    <div class="row spread" style="margin-bottom:14px;">
+      <h2 style="margin:0;"><span data-t="recipesTitle"></span> (<span id="recipeCount">0</span>)</h2>
+      <button class="iconbtn" id="btnAddRecipe" data-t="addCustomRecipe"></button>
+    </div>
+    <div class="grid" id="recipes"></div>
+  </section>
+
+  <section class="tab" id="tab-weekly">
+    <div class="card">
+      <div class="row spread">
+        <div>
+          <h2 style="margin:0;" data-t="plannerTitle"></h2>
+          <div class="hint" data-t="plannerDesc"></div>
+        </div>
+        <div class="row">
+          <button class="iconbtn" id="btnClearPlan" data-t="clear"></button>
+          <button class="primary-btn inline" id="btnPlanToShop" data-t="toShopping"></button>
+        </div>
+      </div>
+    </div>
+    <div class="daygrid" id="week"></div>
+  </section>
+
+  <section class="tab" id="tab-shopping">
+    <div class="card">
+      <div class="row spread" style="margin-bottom:12px;">
+        <h2 style="margin:0;" data-t="shoppingTitle"></h2>
+        <div class="row">
+          <button class="iconbtn" id="btnCopyList" data-t="copy"></button>
+          <button class="iconbtn danger" id="btnClearChecked" data-t="clearDone"></button>
+        </div>
+      </div>
+      <div class="row">
+        <input id="shopInput" data-t-ph="shopPh" style="flex:1; width:auto; min-width:140px;" autocomplete="off">
+        <select id="shopCat" style="width:auto;" aria-label="Category"></select>
+        <button class="primary-btn inline" id="btnAddShop" data-t-label="add">＋</button>
+      </div>
+      <div id="shoppingList" style="margin-top:8px;"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-pantry">
+    <div class="card">
+      <div class="row spread" style="margin-bottom:12px;">
+        <h2 style="margin:0;" data-t="pantryTitle"></h2>
+        <button class="primary-btn inline" id="btnAddPantry" data-t="addPantry"></button>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th data-t="item"></th><th data-t="qty"></th><th data-t="cat"></th><th data-t="action"></th>
+            </tr>
+          </thead>
+          <tbody id="pantryList"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-community">
+    <div class="card">
+      <div class="row spread">
+        <div>
+          <h2 style="margin:0;" data-t="communityTitle"></h2>
+          <div class="hint" data-t="communityHint"></div>
+        </div>
+        <button class="primary-btn inline" id="btnAddPost" data-t="addPost"></button>
+      </div>
+    </div>
+    <div id="posts" style="display:grid; gap:14px;"></div>
+  </section>
+</main>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<div class="modal" id="modal">
+  <div class="modalbox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="row spread" style="margin-bottom:12px;">
+      <h3 id="modalTitle" style="margin:0;"></h3>
+      <button class="iconbtn" id="btnCloseModal" data-t-label="close">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const $ = id => document.getElementById(id);
+
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } },
+    del(k) { try { localStorage.removeItem(k); } catch {} }
+  };
+  const read = (k, fallback) => { try { return JSON.parse(store.get(k)) ?? fallback; } catch { return fallback; } };
+
+  const LANGS = ["en", "de", "fr", "it", "tr", "ar"];
+  const LOCALES = { en: "en-US", de: "de-DE", fr: "fr-FR", it: "it-IT", tr: "tr-TR", ar: "ar-SA" };
+  const L = {
+    subtitle: ["YOUR INTELLIGENT KITCHEN ASSISTANT", "DEIN INTELLIGENTER KÜCHENASSISTENT", "VOTRE ASSISTANT DE CUISINE INTELLIGENT", "IL TUO ASSISTENTE DI CUCINA INTELLIGENTE", "AKILLI MUTFAK ASİSTANINIZ", "مساعد المطبخ الذكي الخاص بك"],
+    heroTitle: ["What would you like to cook today?", "Was möchtest du heute kochen?", "Que souhaitez-vous cuisiner aujourd'hui ?", "Cosa vorresti cucinare oggi?", "Bugün ne pişirmek istersiniz?", "ماذا تريد أن تطبخ اليوم؟"],
+    ingPh: ["Enter ingredients (e.g. pasta, tomatoes)…", "Zutaten eingeben (z. B. Pasta, Tomaten)…", "Saisir des ingrédients (ex. pâtes, tomates)…", "Inserisci ingredienti (es. pasta, pomodori)…", "Malzeme girin (ör. makarna, domates)…", "أدخل المكونات (مثل: معكرونة، طماطم)…"],
+    quickSelect: ["QUICK SELECT INGREDIENTS:", "SCHNELLAUSWAHL ZUTATEN:", "SÉLECTION RAPIDE D'INGRÉDIENTS :", "SELEZIONE RAPIDA INGREDIENTI:", "HIZLI MALZEME SEÇİMİ:", "اختيار سريع للمكونات:"],
+    suggestBtn: ["Show recipe suggestions", "Rezeptvorschläge anzeigen", "Afficher des suggestions", "Mostra suggerimenti", "Tarif önerilerini göster", "عرض اقتراحات الوصفات"],
+    sugUpdated: ["Suggestions updated", "Vorschläge aktualisiert", "Suggestions mises à jour", "Suggerimenti aggiornati", "Öneriler güncellendi", "تم تحديث الاقتراحات"],
+    dietLabel: ["Diet", "Ernährung", "Régime", "Dieta", "Diyet", "النظام الغذائي"],
+    timeLabel: ["Max time", "Max. Zeit", "Temps max", "Tempo max", "Maks süre", "الوقت الأقصى"],
+    catLabel: ["Category", "Kategorie", "Catégorie", "Categoria", "Kategori", "الفئة"],
+    optAllDiets: ["All diets", "Alle Ernährungsformen", "Tous les régimes", "Tutte le diete", "Tüm diyetler", "جميع الأنظمة"],
+    optAnyTime: ["Any time", "Egal wie lange", "Peu importe", "Qualsiasi", "Farketmez", "أي وقت"],
+    optAllCats: ["All categories", "Alle Kategorien", "Toutes les catégories", "Tutte le categorie", "Tüm kategoriler", "جميع الفئات"],
+    diet_veg: ["Vegetarian", "Vegetarisch", "Végétarien", "Vegetariano", "Vejetaryen", "نباتي"],
+    diet_vegan: ["Vegan", "Vegan", "Végétalien", "Vegano", "Vegan", "نباتي صرف"],
+    diet_gf: ["Gluten-free", "Glutenfrei", "Sans gluten", "Senza glutine", "Glutensiz", "خالي من الجلوتين"],
+    diet_lowcarb: ["Low-carb", "Low-Carb", "Pauvre en glucides", "Low-carb", "Düşük karbonhidrat", "منخفض الكربوهيدرات"],
+    cu_italian: ["Italian", "Italienisch", "Italien", "Italiano", "İtalyan", "إيطالي"],
+    cu_med: ["Mediterranean", "Mediterran", "Méditerranéen", "Mediterraneo", "Akdeniz", "متوسطي"],
+    cu_asian: ["Asian", "Asiatisch", "Asiatique", "Asiatico", "Asya", "آسيوي"],
+    cu_classic: ["Classic", "Klassisch", "Classique", "Classico", "Klasik", "كلاسيكي"],
+    cu_dessert: ["🍨 Desserts", "🍨 Desserts", "🍨 Desserts", "🍨 Dessert", "🍨 Tatlılar", "🍨 حلويات"],
+    cu_quick: ["Quick & easy", "Schnell & einfach", "Rapide & facile", "Veloce e facile", "Hızlı ve kolay", "سريع وسهل"],
+    cu_creative: ["Creative", "Kreativ", "Créatif", "Creativo", "Yaratıcı", "إبداعي"],
+    min: ["min", "Min", "min", "min", "dk", "د"],
+    recipesTitle: ["Recipes & desserts", "Rezepte & Desserts", "Recettes & desserts", "Ricette e dessert", "Tarifler ve tatlılar", "الوصفات والحلويات"],
+    addCustomRecipe: ["＋ Custom recipe", "＋ Eigenes Rezept", "＋ Recette perso", "＋ Ricetta personale", "＋ Özel tarif", "＋ وصفة مخصصة"],
+    noRecipes: ["No matching recipes found.", "Keine passenden Rezepte gefunden.", "Aucune recette correspondante.", "Nessuna ricetta trovata.", "Uygun tarif bulunamadı.", "لم يتم العثور على وصفات مطابقة."],
+    noIngHint: ["Pick some ingredients above to get suggestions.", "Wähle oben Zutaten aus, um Vorschläge zu erhalten.", "Choisissez des ingrédients ci-dessus pour obtenir des suggestions.", "Scegli degli ingredienti per ottenere suggerimenti.", "Öneri almak için yukarıdan malzeme seçin.", "اختر بعض المكونات أعلاه للحصول على اقتراحات."],
+    badgeSug: ["Suggestion", "Vorschlag", "Suggestion", "Suggerimento", "Öneri", "اقتراح"],
+    sugNote: ["This is a template-based suggestion built from your ingredients, not a tested recipe. Adjust amounts and seasoning to taste.", "Dies ist ein vorlagenbasierter Vorschlag aus deinen Zutaten, kein geprüftes Rezept. Mengen und Gewürze bitte nach Geschmack anpassen.", "Suggestion basée sur un modèle à partir de vos ingrédients, pas une recette testée. Ajustez quantités et assaisonnement.", "Suggerimento basato su un modello con i tuoi ingredienti, non una ricetta testata. Regola quantità e condimenti.", "Bu, malzemelerinizden oluşturulmuş şablon tabanlı bir öneridir, denenmiş bir tarif değildir. Miktar ve baharatı tadınıza göre ayarlayın.", "هذا اقتراح قائم على قالب من مكوناتك وليس وصفة مجربة. عدّل الكميات والتوابل حسب ذوقك."],
+    ingredientsLbl: ["Ingredients:", "Zutaten:", "Ingrédients :", "Ingredienti:", "Malzemeler:", "المكونات:"],
+    stepsLbl: ["Preparation:", "Zubereitung:", "Préparation :", "Preparazione:", "Hazırlanış:", "طريقة التحضير:"],
+    details: ["Details & cook", "Details & Kochen", "Détails & cuisine", "Dettagli e cucina", "Detaylar ve pişirme", "التفاصيل والطهي"],
+    addToShop: ["Add ingredients to shopping list", "Zutaten zur Einkaufsliste hinzufügen", "Ajouter à la liste de courses", "Aggiungi alla lista della spesa", "Malzemeleri alışveriş listesine ekle", "أضف المكونات إلى قائمة التسوق"],
+    addedToShop: ["{0} added, {1} skipped (already listed or in pantry)", "{0} hinzugefügt, {1} übersprungen (schon auf der Liste oder im Vorrat)", "{0} ajoutés, {1} ignorés (déjà listés ou en stock)", "{0} aggiunti, {1} saltati (già in lista o in dispensa)", "{0} eklendi, {1} atlandı (zaten listede veya kilerde)", "تمت إضافة {0}، وتخطي {1} (موجود في القائمة أو المخزن)"],
+    plannerTitle: ["Weekly meal planner", "Wochenplaner", "Planificateur de repas", "Pianificatore settimanale", "Haftalık yemek planı", "مخطط الوجبات الأسبوعي"],
+    plannerDesc: ["Plan your meals for the week.", "Plane deine Mahlzeiten für die Woche.", "Organisez vos repas de la semaine.", "Organizza i tuoi pasti.", "Haftalık öğünlerinizi düzenleyin.", "قم بتنظيم وجباتك الأسبوعية."],
+    clear: ["Clear", "Leeren", "Effacer", "Svuota", "Temizle", "مسح"],
+    planCleared: ["Plan cleared.", "Plan geleert.", "Plan effacé.", "Piano svuotato.", "Plan temizlendi.", "تم مسح الخطة."],
+    toShopping: ["🛒 To shopping list", "🛒 Zur Einkaufsliste", "🛒 Liste de courses", "🛒 Lista della spesa", "🛒 Alışveriş listesi", "🛒 قائمة التسوق"],
+    planNoIngs: ["No ingredients to transfer. Pick recipes in the planner first.", "Keine Zutaten zu übertragen. Wähle zuerst Rezepte im Planer.", "Aucun ingrédient à transférer. Choisissez d'abord des recettes.", "Nessun ingrediente da trasferire. Scegli prima delle ricette.", "Aktarılacak malzeme yok. Önce plandan tarif seçin.", "لا توجد مكونات للنقل. اختر وصفات أولاً."],
+    m_breakfast: ["Breakfast", "Frühstück", "Petit-déjeuner", "Colazione", "Kahvaltı", "الفطور"],
+    m_lunch: ["Lunch", "Mittagessen", "Déjeuner", "Pranzo", "Öğle yemeği", "الغداء"],
+    m_dinner: ["Dinner", "Abendessen", "Dîner", "Cena", "Akşam yemeği", "العشاء"],
+    mealTitle: ["Meal ({0} – {1})", "Mahlzeit ({0} – {1})", "Repas ({0} – {1})", "Pasto ({0} – {1})", "Öğün ({0} – {1})", "وجبة ({0} – {1})"],
+    pickRecipe: ["Choose a recipe", "Rezept auswählen", "Choisir une recette", "Scegli una ricetta", "Tarif seç", "اختر وصفة"],
+    orOwn: ["Or enter your own meal", "Oder eigene Mahlzeit eingeben", "Ou saisir votre repas", "Oppure inserisci un tuo pasto", "Veya kendi yemeğinizi girin", "أو أدخل وجبتك الخاصة"],
+    none: ["— none —", "— keine —", "— aucune —", "— nessuna —", "— yok —", "— لا شيء —"],
+    add: ["Add", "Hinzufügen", "Ajouter", "Aggiungi", "Ekle", "إضافة"],
+    addSlot: ["＋ Add", "＋ Hinzufügen", "＋ Ajouter", "＋ Aggiungi", "＋ Ekle", "＋ إضافة"],
+    editSlot: ["✏️ Change", "✏️ Ändern", "✏️ Modifier", "✏️ Modifica", "✏️ Değiştir", "✏️ تعديل"],
+    save: ["Save", "Speichern", "Enregistrer", "Salva", "Kaydet", "حفظ"],
+    remove: ["Remove", "Entfernen", "Retirer", "Rimuovi", "Kaldır", "إزالة"],
+    saved: ["Saved!", "Gespeichert!", "Enregistré !", "Salvato!", "Kaydedildi!", "تم الحفظ!"],
+    saveFail: ["Could not save data (storage full or blocked).", "Daten konnten nicht gespeichert werden (Speicher voll oder gesperrt).", "Échec de l'enregistrement (stockage plein ou bloqué).", "Impossibile salvare (memoria piena o bloccata).", "Kaydedilemedi (depolama dolu veya engelli).", "تعذر الحفظ (التخزين ممتلئ أو محظور)."],
+    shoppingTitle: ["Shopping list", "Einkaufsliste", "Liste de courses", "Lista della spesa", "Alışveriş listesi", "قائمة التسوق"],
+    copy: ["Copy", "Kopieren", "Copier", "Copia", "Kopyala", "نسخ"],
+    copied: ["Copied!", "Kopiert!", "Copié !", "Copiato!", "Kopyalandı!", "تم النسخ!"],
+    copyFail: ["Copy failed.", "Kopieren fehlgeschlagen.", "Échec de la copie.", "Copia non riuscita.", "Kopyalanamadı.", "فشل النسخ."],
+    clearDone: ["Clear done", "Erledigte löschen", "Effacer faits", "Elimina fatti", "Tamamlananları sil", "حذف المكتمل"],
+    shopPh: ["Add item…", "Artikel hinzufügen…", "Ajouter un article…", "Aggiungi articolo…", "Ürün ekle…", "أضف عنصراً…"],
+    shopEmpty: ["Your shopping list is empty.", "Die Einkaufsliste ist leer.", "Votre liste est vide.", "La lista è vuota.", "Alışveriş listeniz boş.", "قائمة التسوق فارغة."],
+    c_produce: ["Produce", "Gemüse & Obst", "Fruits & légumes", "Frutta e verdura", "Sebze & meyve", "خضار وفواكه"],
+    c_dairy: ["Dairy & fridge", "Kühlregal", "Produits laitiers", "Latticini", "Süt ürünleri", "ألبان"],
+    c_pantry: ["Pantry", "Vorratskammer", "Garde-manger", "Dispensa", "Kiler", "مخزن"],
+    c_spices: ["Spices", "Gewürze", "Épices", "Spezie", "Baharatlar", "بهارات"],
+    c_dessert: ["Dessert", "Dessert", "Dessert", "Dessert", "Tatlı", "حلويات"],
+    c_other: ["Other", "Sonstiges", "Autre", "Altro", "Diğer", "أخرى"],
+    pantryTitle: ["Pantry tracker", "Vorratskammer", "Garde-manger", "Dispensa", "Kiler takibi", "متتبع المخزن"],
+    addPantry: ["＋ Add item", "＋ Vorrat hinzufügen", "＋ Ajouter", "＋ Aggiungi", "＋ Ürün ekle", "＋ إضافة عنصر"],
+    item: ["Item", "Artikel", "Article", "Articolo", "Ürün", "العنصر"],
+    qty: ["Qty", "Menge", "Qté", "Q.tà", "Miktar", "الكمية"],
+    cat: ["Category", "Kategorie", "Catégorie", "Categoria", "Kategori", "الفئة"],
+    action: ["Action", "Aktion", "Action", "Azione", "İşlem", "إجراء"],
+    itemName: ["Item name", "Artikelname", "Nom de l'article", "Nome articolo", "Ürün adı", "اسم العنصر"],
+    communityTitle: ["Community & tips", "Community & Tipps", "Communauté & astuces", "Community e consigli", "Topluluk ve ipuçları", "المجتمع والنصائح"],
+    communityHint: ["Posts are stored locally on this device only.", "Beiträge werden nur lokal auf diesem Gerät gespeichert.", "Les posts sont enregistrés uniquement sur cet appareil.", "I post sono salvati solo su questo dispositivo.", "Gönderiler yalnızca bu cihazda saklanır.", "تُحفظ المنشورات على هذا الجهاز فقط."],
+    addPost: ["＋ Create post", "＋ Beitrag erstellen", "＋ Créer un post", "＋ Crea post", "＋ Gönderi oluştur", "＋ إنشاء منشور"],
+    postTitle: ["Title", "Titel", "Titre", "Titolo", "Başlık", "العنوان"],
+    postBody: ["Content", "Inhalt", "Contenu", "Contenuto", "İçerik", "المحتوى"],
+    publish: ["Publish", "Veröffentlichen", "Publier", "Pubblica", "Yayınla", "نشر"],
+    posted: ["Post published!", "Beitrag veröffentlicht!", "Post publié !", "Post pubblicato!", "Gönderi yayınlandı!", "تم النشر!"],
+    newRecipe: ["Create custom recipe", "Eigenes Rezept erstellen", "Créer une recette", "Crea ricetta personale", "Özel tarif oluştur", "إنشاء وصفة مخصصة"],
+    rTitle: ["Title", "Titel", "Titre", "Titolo", "Başlık", "العنوان"],
+    rIngs: ["Ingredients (comma-separated)", "Zutaten (kommagetrennt)", "Ingrédients (séparés par des virgules)", "Ingredienti (separati da virgole)", "Malzemeler (virgülle ayırın)", "المكونات (مفصولة بفواصل)"],
+    rTime: ["Time (minutes)", "Zeit (Minuten)", "Temps (minutes)", "Tempo (minuti)", "Süre (dakika)", "الوقت (دقائق)"],
+    rSteps: ["Steps (one per line)", "Schritte (eine pro Zeile)", "Étapes (une par ligne)", "Passaggi (uno per riga)", "Adımlar (satır başına bir)", "الخطوات (واحدة في كل سطر)"],
+    defaultSteps: ["Prepare and cook the ingredients, season and serve.", "Zutaten vorbereiten und garen, würzen und servieren.", "Préparer et cuire les ingrédients, assaisonner et servir.", "Preparare e cuocere gli ingredienti, condire e servire.", "Malzemeleri hazırlayıp pişirin, baharatlayın ve servis edin.", "حضّر المكونات واطبخها، ثم تبّل وقدّم."],
+    timerTitle: ["Timer", "Timer", "Minuteur", "Timer", "Zamanlayıcı", "المؤقت"],
+    timerMinutes: ["Minutes", "Minuten", "Minutes", "Minuti", "Dakika", "دقائق"],
+    timerStart: ["Start", "Starten", "Démarrer", "Avvia", "Başlat", "ابدأ"],
+    timerStop: ["Stop", "Stoppen", "Arrêter", "Ferma", "Durdur", "إيقاف"],
+    timerSet: ["Timer set: {0} min", "Timer gestellt: {0} Min.", "Minuteur réglé : {0} min", "Timer impostato: {0} min", "Zamanlayıcı: {0} dk", "تم ضبط المؤقت: {0} د"],
+    timerDone: ["⏰ Timer finished!", "⏰ Timer abgelaufen!", "⏰ Minuteur terminé !", "⏰ Timer scaduto!", "⏰ Süre doldu!", "⏰ انتهى الوقت!"],
+    timerInvalid: ["Please enter 1–600 minutes.", "Bitte 1–600 Minuten eingeben.", "Entrez 1 à 600 minutes.", "Inserisci 1–600 minuti.", "1–600 dakika girin.", "أدخل من 1 إلى 600 دقيقة."],
+    voice: ["Voice input", "Spracheingabe", "Saisie vocale", "Input vocale", "Sesli giriş", "الإدخال الصوتي"],
+    voiceUnsupported: ["Voice input is not supported.", "Spracheingabe nicht unterstützt.", "Saisie vocale non prise en charge.", "Input vocale non supportato.", "Sesli giriş desteklenmiyor.", "الإدخال الصوتي غير مدعوم."],
+    listening: ["🎙️ Listening…", "🎙️ Höre zu…", "🎙️ J'écoute…", "🎙️ In ascolto…", "🎙️ Dinleniyor…", "🎙️ جارٍ الاستماع…"],
+    heard: ["Heard: “{0}”", "Erkannt: „{0}“", "Entendu : « {0} »", "Sentito: «{0}»", "Algılanan: “{0}”", "تم التعرف: «{0}»"],
+    voiceError: ["Voice input failed.", "Spracheingabe fehlgeschlagen.", "Échec de la saisie vocale.", "Input vocale non riuscito.", "Sesli giriş başarısız.", "فشل الإدخال الصوتي."],
+    theme: ["Toggle theme", "Design wechseln", "Changer de thème", "Cambia tema", "Temayı değiştir", "تبديل المظهر"],
+    close: ["Close", "Schließen", "Fermer", "Chiudi", "Kapat", "إغلاق"],
+    navRecipes: ["Recipes", "Rezepte", "Recettes", "Ricette", "Tarifler", "الوصفات"],
+    navPlanner: ["Plan", "Planer", "Plan", "Piano", "Plan", "الخطة"],
+    navShopping: ["Shopping", "Einkauf", "Courses", "Spesa", "Alışveriş", "التسوق"],
+    navPantry: ["Pantry", "Vorrat", "Stock", "Dispensa", "Kiler", "المخزن"],
+    navCommunity: ["Community", "Community", "Communauté", "Community", "Topluluk", "المجتمع"]
+  };
+  const t = (key, ...args) => {
+    const e = L[key];
+    let s = e ? (e[LANGS.indexOf(state.lang)] ?? e[0]) : key;
+    args.forEach((v, i) => { s = s.replace(`{${i}}`, v); });
+    return s;
+  };
+
+  const DAY_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const MEAL_KEYS = ["breakfast", "lunch", "dinner"];
+  const CATS = ["produce", "dairy", "pantry", "spices", "dessert", "other"];
+  const LEGACY_CAT = { "Gemüse & Obst": "produce", "Kühlregal": "dairy", "Vorratskammer": "pantry", "Gewürze": "spices", "Dessert": "dessert", "Sonstiges": "other" };
+  const LEGACY_CUISINE = { "Italienisch": "italian", "Mediterran": "med", "Asiatisch": "asian", "Klassisch": "classic", "Nachtisch": "dessert", "Kreativ": "creative", "Schnell & Einfach": "quick" };
+  const catKey = c => CATS.includes(c) ? c : (LEGACY_CAT[c] || "other");
+  const availableTags = ["Pasta", "Sahne", "Knoblauch", "Tomate", "Avocado", "Schokolade", "Spinat", "Feta", "Linsen", "Reis", "Paprika", "Hähnchen", "Tofu", "Beeren", "Eier"];
+
+  const IMG = {
+    pasta: "https://images.unsplash.com/photo-1621996346565-e3d5d6281292?auto=format&fit=crop&w=800&q=80",
+    casserole: "https://images.unsplash.com/photo-1584278860011-633215267ff6?auto=format&fit=crop&w=800&q=80",
+    soup: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80",
+    bowl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80",
+    dessert: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80",
+    veg: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80"
+  };
+
+  const storedDark = store.get("kp_dark");
+  const state = {
+    lang: LANGS.includes(store.get("kp_lang")) ? store.get("kp_lang") : "de",
+    dark: storedDark === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : storedDark === "true",
+    tab: "recipes",
+    ingredients: ["Pasta", "Sahne", "Knoblauch", "Tomate"],
+    custom: read("kp_custom", []),
+    plan: read("kp_plan", {}),
+    shopping: read("kp_shop", [{ id: "s1", name: "Tomaten", category: "produce", checked: false }]),
+    pantry: read("kp_pantry", [{ id: "p1", name: "Mehl", qty: "1 kg", cat: "pantry" }]),
+    posts: read("kp_posts", [{ title: "Tipp für knusprigen Tofu", body: "Vor dem Braten mit Stärke anstäuben!", author: "ChefLena" }]),
+    cache: new Map()
+  };
+  DAY_KEYS.forEach(d => {
+    state.plan[d] = state.plan[d] || {};
+    MEAL_KEYS.forEach(m => { state.plan[d][m] = state.plan[d][m] || null; });
+  });
+  state.shopping.forEach(x => { x.category = catKey(x.category); });
+  state.pantry.forEach(x => { x.cat = catKey(x.cat); });
+
+  function normRecipe(r) {
+    if (!r.diets) r.diets = r.diet === "Vegan" ? ["veg", "vegan"] : r.diet === "Vegetarisch" ? ["veg"] : [];
+    r.cuisine = LEGACY_CUISINE[r.cuisine] || r.cuisine || "creative";
+    return r;
+  }
+  state.custom.forEach(normRecipe);
+
+  function save() {
+    const ok = [
+      store.set("kp_custom", JSON.stringify(state.custom)),
+      store.set("kp_plan", JSON.stringify(state.plan)),
+      store.set("kp_shop", JSON.stringify(state.shopping)),
+      store.set("kp_pantry", JSON.stringify(state.pantry)),
+      store.set("kp_posts", JSON.stringify(state.posts))
+    ].every(Boolean);
+    if (!ok) toast(t("saveFail"), 4000);
+  }
+
+  let toastTimer = null;
+  function toast(s, ms = 2400) {
+    const el = $("toast");
+    el.textContent = s;
+    el.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.style.display = "none"; }, ms);
+  }
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  const norm = s => String(s ?? "").toLowerCase().trim();
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  function deduplicate(array) {
+    const seen = new Set();
+    return array.filter(item => {
+      const k = norm(item);
+      if (!k || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+
+  const words = s => norm(s).split(/[^\p{L}]+/u).filter(Boolean);
+  const sameWord = (a, b) => a === b || (Math.min(a.length, b.length) >= 3 && (a.startsWith(b) || b.startsWith(a)) && Math.abs(a.length - b.length) <= 2);
+  const hasIng = (list, ing) => {
+    const w = words(ing);
+    if (!w.length) return false;
+    return list.some(x => { const xw = words(x); return w.every(a => xw.some(b => sameWord(a, b))); });
+  };
+  const anyIng = (list, keys) => keys.some(k => hasIng(list, k));
+
+  const ANIMAL = ["hähnchen", "fleisch", "schinken", "speck", "fisch", "lachs", "thunfisch", "hack"];
+  const DAIRY_EGG = ["sahne", "feta", "käse", "parmesan", "butter", "eier", "joghurt", "honig", "milch", "mozzarella"];
+  const GLUTEN = ["pasta", "nudeln", "mehl", "brot", "couscous", "sojasauce", "müsli", "weizen"];
+  const CARBS = ["pasta", "nudeln", "reis", "kartoffeln", "mehl", "brot", "linsen", "müsli", "couscous"];
+  function dietsFor(ings) {
+    const d = [];
+    const veg = !anyIng(ings, ANIMAL);
+    if (veg) d.push("veg");
+    if (veg && !anyIng(ings, DAIRY_EGG)) d.push("vegan");
+    if (!anyIng(ings, GLUTEN)) d.push("gf");
+    if (!anyIng(ings, CARBS)) d.push("lowcarb");
+    return d;
+  }
+
+  function guessCat(name) {
+    const l = [name];
+    if (anyIng(l, ["sahne", "parmesan", "butter", "joghurt", "käse", "feta", "eier", "milch", "mozzarella"])) return "dairy";
+    if (anyIng(l, ["tomate", "paprika", "zucchini", "knoblauch", "ingwer", "zitrone", "beeren", "spinat", "avocado", "kartoffeln", "karotten", "zwiebel"])) return "produce";
+    if (anyIng(l, ["salz", "pfeffer", "kräuter", "muskatnuss"]) || /salz|pfeffer|kräuter/i.test(name)) return "spices";
+    return "pantry";
+  }
+
+  function photoFor(r) {
+    const s = norm(r.title);
+    if (/suppe|eintopf/.test(s)) return IMG.soup;
+    if (/auflauf|gratin|überbacken/.test(s)) return IMG.casserole;
+    if (r.cuisine === "dessert" || /dessert|parfait/.test(s)) return IMG.dessert;
+    if (/bowl|tofu|reis/.test(s)) return IMG.bowl;
+    if (/pasta|spaghetti|nudel/.test(s)) return IMG.pasta;
+    return IMG.veg;
+  }
+
+  const baseRecipes = [
+    {
+      id: "r1", title: "Cremige Knoblauch-Pasta", time: 20, calories: 520, diets: ["veg"], cuisine: "italian",
+      ingredients: ["Pasta", "Knoblauch", "Sahne", "Parmesan", "Butter", "Salz & Pfeffer"],
+      steps: [
+        "Reichlich Salzwasser in einem großen Topf zum Kochen bringen und die Pasta darin nach Packungsanweisung bissfest (al dente) garen.",
+        "Währenddessen die Knoblauchzehen schälen und fein hacken. Butter in einer großen Pfanne bei mittlerer Hitze schmelzen lassen.",
+        "Gehackten Knoblauch in die Butter geben und etwa 1-2 Minuten sanft anbraten, bis er duftet.",
+        "Die Sahne angießen, aufkochen lassen und bei geringer Hitze ca. 3-4 Minuten leicht einköcheln lassen.",
+        "Frisch geriebenen Parmesan unterrühren, bis eine cremige Sauce entsteht. Mit Salz und Pfeffer abschmecken.",
+        "Pasta abgießen, direkt in die Pfanne zur Sauce geben, gut vermengen und heiß servieren."
+      ]
+    },
+    {
+      id: "r2", title: "Mediterrane Gemüsepfanne", time: 25, calories: 380, diets: ["veg", "vegan", "gf", "lowcarb"], cuisine: "med",
+      ingredients: ["Paprika", "Zucchini", "Tomaten", "Knoblauch", "Olivenöl", "Kräuter der Provence"],
+      steps: [
+        "Paprika entkernen und in Stücke schneiden. Zucchini in Scheiben schneiden. Tomaten würfeln.",
+        "Knoblauch schälen und fein würfeln. Olivenöl in einer Pfanne erhitzen.",
+        "Paprika und Zucchini ca. 5-7 Minuten kross anbraten.",
+        "Knoblauch und Tomaten hinzufügen, weitere 3 Minuten mitbraten.",
+        "Mit Kräutern der Provence, Meersalz und Pfeffer kräftig würzen und servieren."
+      ]
+    },
+    {
+      id: "r3", title: "Tofu-Reis-Bowl", time: 30, calories: 460, diets: ["veg", "vegan"], cuisine: "asian",
+      ingredients: ["Tofu", "Reis", "Paprika", "Sojasauce", "Ingwer", "Sesamöl"],
+      steps: [
+        "Reis nach Packungsanweisung in leicht gesalzenem Wasser gar kochen.",
+        "Tofu mit Küchenpapier gründlich trocken tupfen und in Würfel schneiden.",
+        "Tofu in einer Pfanne mit Sesamöl von allen Seiten 8-10 Minuten goldbraun anbraten.",
+        "Ingwer reiben und zusammen mit Paprikastreifen kurz mitbraten. Mit Sojasauce ablöschen.",
+        "Gekochten Reis in Schüsseln füllen, Gemüse und knusprigen Tofu darauf anrichten."
+      ]
+    },
+    {
+      id: "r4", title: "Beeren-Joghurt-Parfait", time: 10, calories: 220, diets: ["veg"], cuisine: "dessert",
+      ingredients: ["Joghurt", "Beeren", "Honig", "Müsli"],
+      steps: [
+        "Die frischen Beeren gründlich waschen und trocken tupfen.",
+        "In einem Dessertglas abwechselnd Joghurt, Müsli und Beeren schichten.",
+        "Mit flüssigem Honig beträufeln und sofort servieren."
+      ]
+    }
+  ];
+
+  function suggestions(ings, dietFilter) {
+    const vegan = dietFilter === "vegan";
+    const clean = deduplicate(ings);
+    const savory = clean.filter(x => !["schokolade", "beeren", "zucker"].includes(norm(x)));
+    const sweet = clean.filter(x => ["beeren", "schokolade"].includes(norm(x)));
+    const out = [];
+
+    if (savory.length) {
+      const main = cap(savory[0]);
+      const second = savory[1] ? cap(savory[1]) : null;
+      const names = main + (second ? ` & ${second}` : "");
+      const list = savory.join(", ");
+      const mk = (id, title, time, cuisine, extra, steps) => {
+        const ingredients = deduplicate([...savory, ...extra]);
+        return { id, title, time, cuisine, ingredients, steps, diets: dietsFor(ingredients), suggested: true };
+      };
+      out.push(mk("gen_pan", `Schnelle ${names}-Pfanne`, 20, "quick",
+        ["Olivenöl", "Knoblauch", "Salz & Pfeffer"],
+        [`Die Zutaten (${list}) vorbereiten und in mundgerechte Stücke schneiden.`, "Olivenöl in einer Pfanne erhitzen und Knoblauch andünsten.", "Restliche Zutaten dazugeben und ca. 8 Minuten anbraten.", "Mit Salz und Pfeffer abschmecken und servieren."]));
+      out.push(mk("gen_bake", `Überbackener ${main}-Auflauf`, 35, "classic",
+        vegan ? ["Hafercreme", "Hefeflocken", "Muskatnuss"] : ["Geriebener Käse", "Sahne", "Muskatnuss"],
+        ["Ofen auf 200 °C vorheizen.", `Die Zutaten (${list}) in eine Auflaufform schichten.`, vegan ? "Mit Hafercreme übergießen, mit Muskat würzen und Hefeflocken darüberstreuen." : "Mit Sahne übergießen, mit Muskat würzen und Käse darüberstreuen.", "Ca. 20 Minuten im Ofen goldbraun überbacken."]));
+      out.push(mk("gen_soup", `Wärmende ${main}-Suppe`, 25, "classic",
+        ["Gemüsebrühe", "Kräuter"],
+        [`Die Zutaten (${list}) im Topf kurz andünsten.`, "Mit Gemüsebrühe auffüllen und 15 Minuten köcheln lassen.", "Fein pürieren und mit frischen Kräutern servieren."]));
+      out.push(mk("gen_bowl", `Frische ${names}-Bowl`, 15, "med",
+        vegan ? ["Zitrone", "Olivenöl", "Kichererbsen"] : ["Zitrone", "Olivenöl", "Feta"],
+        [`Die frischen Zutaten (${list}) klein schneiden.`, "In einer Schüssel anrichten.", vegan ? "Mit Olivenöl, Zitrone und Kichererbsen verfeinern." : "Mit Olivenöl, Zitrone und Feta verfeinern."]));
+      out.push(mk("gen_asian", `Asiatische ${main}-Pfanne`, 20, "asian",
+        ["Sojasauce", "Sesamöl"],
+        [`Die Zutaten (${list}) in Streifen schneiden.`, "In einer heißen Pfanne mit Sesamöl kross anbraten.", "Mit Sojasauce ablöschen und warm servieren."]));
+    }
+
+    const dIng = deduplicate([...(sweet.length ? sweet : ["Beeren"]), vegan ? "Sojajoghurt" : "Joghurt", vegan ? "Ahornsirup" : "Honig", "Müsli"]);
+    out.push({
+      id: "gen_dessert", title: "🍨 Süßes Dessert-Parfait", time: 10, cuisine: "dessert", ingredients: dIng, diets: dietsFor(dIng), suggested: true,
+      steps: ["Joghurt in Dessertgläser schichten.", `Die weiteren Zutaten (${dIng.slice(0, -2).join(", ")}) und Müsli abwechselnd darauf schichten.`, `Mit ${vegan ? "Ahornsirup" : "Honig"} beträufeln und sofort servieren.`]
+    });
+    return out;
+  }
+
+  function currentFilters() {
+    return { diet: $("diet").value || "all", time: $("time").value || "all", cuisine: $("cuisine").value || "all" };
+  }
+  const passFilters = f => r =>
+    (f.diet === "all" || r.diets.includes(f.diet)) &&
+    (f.time === "all" || r.time <= +f.time) &&
+    (f.cuisine === "all" || r.cuisine === f.cuisine);
+
+  function getRecipe(id) {
+    return state.cache.get(id) || [...baseRecipes, ...state.custom].find(x => x.id === id);
+  }
+
+  function renderTags() {
+    $("selectedCount").textContent = state.ingredients.length;
+    $("quickTags").innerHTML = availableTags.map(tag => {
+      const active = state.ingredients.some(x => norm(x) === norm(tag));
+      return `<button class="chip ${active ? "selected" : ""}" data-act="tag" data-tag="${esc(tag)}" aria-pressed="${active}">${esc(tag)} ${active ? "✕" : "＋"}</button>`;
+    }).join("");
+  }
+
+  function toggleTag(tag) {
+    const idx = state.ingredients.findIndex(x => norm(x) === norm(tag));
+    if (idx > -1) state.ingredients.splice(idx, 1); else state.ingredients.push(tag);
+    renderTags();
+    renderRecipes();
+  }
+
+  function addIngredientFromInput() {
+    const val = $("ingredientInput").value.trim();
+    if (!val) return;
+    val.split(",").forEach(x => {
+      const c = x.trim();
+      if (c && !state.ingredients.some(i => norm(i) === norm(c))) state.ingredients.push(c);
+    });
+    $("ingredientInput").value = "";
+    renderTags();
+    renderRecipes();
+  }
+
+  const dietLabel = k => t("diet_" + k);
+  const cuisineLabel = c => L["cu_" + c] ? t("cu_" + c) : c;
+
+  function renderRecipes() {
+    const f = currentFilters();
+    const pass = passFilters(f);
+    const own = [...baseRecipes, ...state.custom].filter(r =>
+      pass(r) && (!state.ingredients.length || state.ingredients.some(ing => hasIng(r.ingredients, ing))));
+    const sug = state.ingredients.length ? suggestions(state.ingredients, f.diet).filter(pass) : [];
+    const list = [...own, ...sug];
+    state.cache = new Map(list.map(r => [r.id, r]));
+    $("recipeCount").textContent = list.length;
+
+    if (!list.length) {
+      $("recipes").innerHTML = `<div class="card" style="grid-column:1/-1;">${esc(state.ingredients.length ? t("noRecipes") : t("noIngHint"))}</div>`;
+      return;
+    }
+    $("recipes").innerHTML = list.map(r => `
+      <div class="recipe-card" data-c="${esc(r.cuisine)}">
+        <img src="${photoFor(r)}" alt="" loading="lazy">
+        <div class="recipe-body">
+          <h3>${esc(r.title)}</h3>
+          <div class="badges">
+            ${r.suggested ? `<span class="badge sug">${esc(t("badgeSug"))}</span>` : ""}
+            ${(r.diets || []).map(d => `<span class="badge" data-d="${esc(d)}">${esc(dietLabel(d))}</span>`).join("")}
+          </div>
+          <div class="recipe-meta">⏱ ${r.time} ${esc(t("min"))}${r.calories ? ` · 🔥 ${r.calories} kcal` : ""} · ${esc(cuisineLabel(r.cuisine))}</div>
+          <div class="recipe-ings"><b>${esc(t("ingredientsLbl"))}</b> ${esc(deduplicate(r.ingredients).join(", "))}</div>
+          <button class="primary-btn" data-act="detail" data-id="${esc(r.id)}" style="font-size:13px; padding:8px 12px;">${esc(t("details"))}</button>
+        </div>
+      </div>`).join("");
+
+    document.querySelectorAll(".recipe-card img").forEach(img => {
+      img.addEventListener("error", () => {
+        const d = document.createElement("div");
+        d.className = "noimg"; d.textContent = "🍽️"; d.setAttribute("aria-hidden", "true");
+        img.replaceWith(d);
+      }, { once: true });
+    });
+  }
+
+  function recipeDetail(id) {
+    const r = getRecipe(id);
+    if (!r) return;
+    openModal(r.title, `
+      <p class="hint">⏱ ${r.time} ${esc(t("min"))}${r.calories ? ` · 🔥 ${r.calories} kcal` : ""}</p>
+      ${r.suggested ? `<p class="hint">ℹ️ ${esc(t("sugNote"))}</p>` : ""}
+      <h4 style="margin-bottom:6px;">${esc(t("ingredientsLbl"))}</h4>
+      <ul>${deduplicate(r.ingredients).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      <h4 style="margin-bottom:6px; margin-top:14px;">${esc(t("stepsLbl"))}</h4>
+      <ol>${(r.steps || []).map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+      <button class="primary-btn" data-act="recipeToShop" data-id="${esc(r.id)}" style="margin-top:18px;">${esc(t("addToShop"))}</button>
+    `);
+  }
+
+  function addIngredients(names) {
+    let added = 0, skipped = 0;
+    deduplicate(names).forEach(n => {
+      const onList = state.shopping.some(x => !x.checked && hasIng([x.name], n) && hasIng([n], x.name));
+      const inPantry = state.pantry.some(p => hasIng([p.name], n));
+      if (onList || inPantry) { skipped++; return; }
+      state.shopping.push({ id: String(Date.now() + Math.random()), name: n, category: guessCat(n), checked: false });
+      added++;
+    });
+    save(); renderShopping();
+    return { added, skipped };
+  }
+
+  function recipeToShop(id) {
+    const r = getRecipe(id);
+    if (!r) return;
+    const { added, skipped } = addIngredients(r.ingredients || []);
+    closeModal();
+    toast(t("addedToShop", added, skipped), 3500);
+  }
+
+  function renderShopping() {
+    if (!state.shopping.length) {
+      $("shoppingList").innerHTML = `<div class="hint" style="padding-top:12px;">${esc(t("shopEmpty"))}</div>`;
+      return;
+    }
+    $("shoppingList").innerHTML = CATS.map(c => {
+      const items = state.shopping.filter(x => x.category === c);
+      if (!items.length) return "";
+      return `<div class="group-title" data-cat="${c}">${esc(t("c_" + c))}</div>` + items.map(x => `
+        <div class="shop-row ${x.checked ? "done" : ""}">
+          <input type="checkbox" id="shop_${esc(x.id)}" data-act="toggleShop" data-id="${esc(x.id)}" ${x.checked ? "checked" : ""}>
+          <label for="shop_${esc(x.id)}">${esc(x.name)}</label>
+          <button class="iconbtn small" data-act="delShop" data-id="${esc(x.id)}" aria-label="${esc(t("remove"))}">✕</button>
+        </div>`).join("");
+    }).join("");
+  }
+
+  function addShop() {
+    const inp = $("shopInput");
+    const name = inp.value.trim();
+    if (!name) return;
+    state.shopping.push({ id: String(Date.now() + Math.random()), name, category: $("shopCat").value || "other", checked: false });
+    inp.value = "";
+    save(); renderShopping();
+  }
+
+  async function copyList() {
+    const text = CATS.map(c => state.shopping.filter(x => x.category === c && !x.checked).map(x => x.name)).flat().join("\n");
+    try { await navigator.clipboard.writeText(text); toast(t("copied")); } catch { toast(t("copyFail")); }
+  }
+
+  const dayLabel = i => new Intl.DateTimeFormat(LOCALES[state.lang], { weekday: "long" }).format(new Date(2026, 0, 5 + i));
+
+  function renderWeek() {
+    $("week").innerHTML = DAY_KEYS.map((key, i) => `
+      <div class="card">
+        <h3 style="margin:0 0 10px;">${esc(dayLabel(i))}</h3>
+        ${MEAL_KEYS.map(m => {
+          const item = state.plan[key][m];
+          return `
+          <div class="slot" data-m="${m}">
+            <div class="hint" style="font-weight:700;">${esc(t("m_" + m))}</div>
+            <div style="font-weight:600; margin:4px 0;">${item ? esc(item.title) : "—"}</div>
+            <button class="iconbtn small" data-act="mealEdit" data-day="${key}" data-meal="${m}">${esc(item ? t("editSlot") : t("addSlot"))}</button>
+          </div>`;
+        }).join("")}
+      </div>`).join("");
+  }
+
+  function recipeChoices() {
+    const all = [...baseRecipes, ...state.custom, ...state.cache.values()];
+    const seen = new Set();
+    return all.filter(r => !seen.has(r.id) && seen.add(r.id));
+  }
+
+  function openMealModal(day, meal) {
+    const existing = state.plan[day][meal];
+    const choices = recipeChoices();
+    openModal(t("mealTitle", dayLabel(DAY_KEYS.indexOf(day)), t("m_" + meal)), `
+      <div class="field">
+        <label>${esc(t("pickRecipe"))}
+          <select id="mealRecipe">
+            <option value="">${esc(t("none"))}</option>
+            ${choices.map(r => `<option value="${esc(r.id)}" ${existing && existing.recipeId === r.id ? "selected" : ""}>${esc(r.title)}</option>`).join("")}
+          </select>
+        </label>
+        <label>${esc(t("orOwn"))}
+          <input id="customMealInput" value="${esc(existing && !existing.recipeId ? existing.title : "")}">
+        </label>
+        <button class="primary-btn" data-act="saveMeal" data-day="${day}" data-meal="${meal}">${esc(t("save"))}</button>
+        ${existing ? `<button class="iconbtn danger" data-act="removeMeal" data-day="${day}" data-meal="${meal}">${esc(t("remove"))}</button>` : ""}
+      </div>`);
+  }
+
+  function saveMeal(day, meal) {
+    const rid = $("mealRecipe").value;
+    const custom = $("customMealInput").value.trim();
+    if (rid) {
+      const r = getRecipe(rid);
+      if (!r) return;
+      state.plan[day][meal] = { title: r.title, recipeId: r.id, ingredients: [...r.ingredients] };
+    } else if (custom) {
+      state.plan[day][meal] = { title: custom, ingredients: [] };
+    } else return;
+    save(); renderWeek(); closeModal(); toast(t("saved"));
+  }
+
+  function planToShop() {
+    const ings = DAY_KEYS.flatMap(d => MEAL_KEYS.flatMap(m => state.plan[d][m]?.ingredients || []));
+    if (!ings.length) { toast(t("planNoIngs"), 3500); return; }
+    const { added, skipped } = addIngredients(ings);
+    tab("shopping");
+    toast(t("addedToShop", added, skipped), 3500);
+  }
+
+  function clearPlan() {
+    DAY_KEYS.forEach(d => { state.plan[d] = { breakfast: null, lunch: null, dinner: null }; });
+    save(); renderWeek(); toast(t("planCleared"));
+  }
+
+  function renderPantry() {
+    $("pantryList").innerHTML = state.pantry.map(x => `
+      <tr>
+        <td>${esc(x.name)}</td><td>${esc(x.qty)}</td><td>${esc(t("c_" + x.cat))}</td>
+        <td><button class="iconbtn small" data-act="delPantry" data-id="${esc(x.id)}" aria-label="${esc(t("remove"))}">✕</button></td>
+      </tr>`).join("");
+  }
+  function openPantryForm() {
+    openModal(t("addPantry").replace(/^＋\s*/, ""), `
+      <div class="field">
+        <label>${esc(t("itemName"))}<input id="pName"></label>
+        <label>${esc(t("qty"))}<input id="pQty"></label>
+        <label>${esc(t("cat"))}<select id="pCat">${CATS.map(c => `<option value="${c}" ${c === "pantry" ? "selected" : ""}>${esc(t("c_" + c))}</option>`).join("")}</select></label>
+        <button class="primary-btn" data-act="savePantry">${esc(t("save"))}</button>
+      </div>`);
+  }
+  function savePantry() {
+    const name = $("pName").value.trim();
+    if (!name) return;
+    state.pantry.push({ id: String(Date.now()), name, qty: $("pQty").value.trim(), cat: $("pCat").value });
+    save(); renderPantry(); closeModal();
+  }
+
+  function openRecipeForm() {
+    openModal(t("newRecipe"), `
+      <div class="field">
+        <label>${esc(t("rTitle"))}<input id="rTitle"></label>
+        <label>${esc(t("rIngs"))}<input id="rIngs"></label>
+        <label>${esc(t("rTime"))}<input id="rTime" type="number" min="1" max="600" value="20"></label>
+        <label>${esc(t("rSteps"))}<textarea id="rSteps"></textarea></label>
+        <button class="primary-btn" data-act="saveRecipe">${esc(t("save"))}</button>
+      </div>`);
+  }
+  function saveCustomRecipe() {
+    const title = $("rTitle").value.trim();
+    const ings = deduplicate($("rIngs").value.split(",").map(x => x.trim()).filter(Boolean));
+    if (!title) return;
+    const time = Math.min(600, Math.max(1, parseInt($("rTime").value, 10) || 20));
+    const steps = $("rSteps").value.split("\n").map(s => s.trim()).filter(Boolean);
+    state.custom.push({
+      id: "c_" + Date.now(), title, time, diets: dietsFor(ings), cuisine: "creative",
+      ingredients: ings, steps: steps.length ? steps : [t("defaultSteps")]
+    });
+    save(); renderRecipes(); closeModal(); toast(t("saved"));
+  }
+
+  function openPostForm() {
+    openModal(t("addPost").replace(/^＋\s*/, ""), `
+      <div class="field">
+        <label>${esc(t("postTitle"))}<input id="pTitle"></label>
+        <label>${esc(t("postBody"))}<textarea id="pBody"></textarea></label>
+        <button class="primary-btn" data-act="savePost">${esc(t("publish"))}</button>
+      </div>`);
+  }
+  function savePost() {
+    const title = $("pTitle").value.trim(), body = $("pBody").value.trim();
+    if (!title || !body) return;
+    state.posts.unshift({ author: "User", title, body });
+    save(); renderPosts(); closeModal(); toast(t("posted"));
+  }
+  function renderPosts() {
+    $("posts").innerHTML = state.posts.map(p =>
+      `<div class="card"><h3 style="margin-top:0;">${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="hint">— ${esc(p.author)}</div></div>`).join("");
+  }
+
+  let timerEnd = +store.get("kp_timer") || 0;
+  let timerInt = null;
+  const fmt = ms => {
+    const s = Math.max(0, Math.ceil(ms / 1000));
+    return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  };
+  function beep() {
+    try {
+      const c = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.35, 0.7].forEach(d => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.frequency.value = 880; g.gain.value = 0.2;
+        o.connect(g); g.connect(c.destination);
+        o.start(c.currentTime + d); o.stop(c.currentTime + d + 0.2);
+      });
+    } catch {}
+  }
+  function tickTimer() {
+    const btn = $("btnTimer");
+    if (!timerEnd) { btn.textContent = "⏱"; const d = $("timerDisplay"); if (d) d.textContent = ""; return; }
+    const left = timerEnd - Date.now();
+    if (left <= 0) {
+      timerEnd = 0; store.del("kp_timer"); clearInterval(timerInt); timerInt = null;
+      btn.textContent = "⏱";
+      beep();
+      if (navigator.vibrate) try { navigator.vibrate([300, 150, 300]); } catch {}
+      toast(t("timerDone"), 10000);
+      if ($("modal").classList.contains("open") && $("timerDisplay")) openTimerModal();
+      return;
+    }
+    btn.textContent = "⏱ " + fmt(left);
+    const d = $("timerDisplay"); if (d) d.textContent = fmt(left);
+  }
+  function startTicking() { clearInterval(timerInt); timerInt = setInterval(tickTimer, 500); tickTimer(); }
+  function openTimerModal() {
+    const running = timerEnd > Date.now();
+    openModal(t("timerTitle"), running ? `
+      <div class="timer-display" id="timerDisplay" aria-live="off">${fmt(timerEnd - Date.now())}</div>
+      <button class="primary-btn" data-act="timerStop">${esc(t("timerStop"))}</button>
+    ` : `
+      <div class="field">
+        <label>${esc(t("timerMinutes"))}<input id="timerMin" type="number" min="1" max="600" value="10"></label>
+        <button class="primary-btn" data-act="timerStart">${esc(t("timerStart"))}</button>
+      </div>`);
+  }
+  function timerStart() {
+    const m = parseFloat($("timerMin").value);
+    if (!Number.isFinite(m) || m < 1 || m > 600) { toast(t("timerInvalid")); return; }
+    timerEnd = Date.now() + m * 60000;
+    store.set("kp_timer", String(timerEnd));
+    startTicking();
+    closeModal();
+    toast(t("timerSet", m));
+  }
+  function timerStop() {
+    timerEnd = 0; store.del("kp_timer"); clearInterval(timerInt); timerInt = null; tickTimer(); closeModal();
+  }
+
+  function startVoiceInput() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return toast(t("voiceUnsupported"));
+    const rec = new SR();
+    rec.lang = LOCALES[state.lang];
+    toast(t("listening"));
+    rec.onresult = e => {
+      const text = e.results[0][0].transcript;
+      toast(t("heard", text));
+      $("ingredientInput").value = text;
+      addIngredientFromInput();
+    };
+    rec.onerror = () => toast(t("voiceError"));
+    try { rec.start(); } catch { toast(t("voiceError")); }
+  }
+
+  let lastFocus = null;
+  function openModal(title, html) {
+    lastFocus = document.activeElement;
+    $("modalTitle").textContent = title;
+    $("modalBody").innerHTML = html;
+    $("modal").classList.add("open");
+    const first = $("modalBody").querySelector("input, select, textarea, button");
+    (first || $("btnCloseModal")).focus();
+  }
+  function closeModal() {
+    $("modal").classList.remove("open");
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  document.addEventListener("keydown", e => {
+    if (!$("modal").classList.contains("open")) return;
+    if (e.key === "Escape") { closeModal(); return; }
+    if (e.key === "Tab") {
+      const f = [...$("modal").querySelectorAll("button, input, select, textarea")].filter(x => !x.disabled && x.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  $("modal").addEventListener("click", e => { if (e.target === $("modal")) closeModal(); });
+
+  function tab(id) {
+    state.tab = id;
+    document.body.dataset.tab = id;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.id === "tab-" + id));
+    document.querySelectorAll(".bottom-btn").forEach(b => {
+      const on = b.dataset.tab === id;
+      b.classList.toggle("active", on);
+      if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+  }
+  function applyTheme() {
+    document.documentElement.classList.toggle("dark", state.dark);
+    $("btnTheme").textContent = state.dark ? "☀️" : "🌙";
+  }
+  function toggleTheme() {
+    state.dark = !state.dark;
+    store.set("kp_dark", String(state.dark));
+    applyTheme();
+  }
+
+  function fillSelect(el, opts) {
+    const cur = el.value;
+    el.innerHTML = opts.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+    if (opts.some(o => o[0] === cur)) el.value = cur;
+  }
+  function populateSelects() {
+    fillSelect($("diet"), [["all", t("optAllDiets")], ...["veg", "vegan", "gf", "lowcarb"].map(k => [k, dietLabel(k)])]);
+    fillSelect($("time"), [["all", t("optAnyTime")], ...[15, 30, 45].map(m => [String(m), `${m} ${t("min")}`])]);
+    fillSelect($("cuisine"), [["all", t("optAllCats")], ...["italian", "med", "asian", "classic", "dessert"].map(k => [k, cuisineLabel(k)])]);
+    fillSelect($("shopCat"), CATS.map(c => [c, t("c_" + c)]));
+  }
+
+  function applyStaticLanguage() {
+    document.documentElement.lang = state.lang;
+    document.documentElement.dir = state.lang === "ar" ? "rtl" : "ltr";
+    $("langSelect").value = state.lang;
+    document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll("[data-t-ph]").forEach(el => { el.placeholder = t(el.dataset.tPh); });
+    document.querySelectorAll("[data-t-label]").forEach(el => {
+      const s = t(el.dataset.tLabel);
+      el.setAttribute("aria-label", s); el.title = s;
+    });
+  }
+  function renderAll() {
+    applyStaticLanguage();
+    populateSelects();
+    renderTags(); renderRecipes(); renderWeek(); renderShopping(); renderPantry(); renderPosts();
+  }
+  function changeLanguage(lang) {
+    state.lang = lang;
+    store.set("kp_lang", lang);
+    if ($("modal").classList.contains("open")) closeModal();
+    renderAll();
+    tab(state.tab);
+  }
+
+  const actions = {
+    tag: el => toggleTag(el.dataset.tag),
+    detail: el => recipeDetail(el.dataset.id),
+    recipeToShop: el => recipeToShop(el.dataset.id),
+    mealEdit: el => openMealModal(el.dataset.day, el.dataset.meal),
+    saveMeal: el => saveMeal(el.dataset.day, el.dataset.meal),
+    removeMeal: el => { state.plan[el.dataset.day][el.dataset.meal] = null; save(); renderWeek(); closeModal(); },
+    delShop: el => { state.shopping = state.shopping.filter(x => x.id !== el.dataset.id); save(); renderShopping(); },
+    delPantry: el => { state.pantry = state.pantry.filter(x => x.id !== el.dataset.id); save(); renderPantry(); },
+    savePantry, saveRecipe: saveCustomRecipe, savePost,
+    timerStart, timerStop
+  };
+  document.addEventListener("click", e => {
+    const el = e.target.closest("[data-act]");
+    if (el && el.type !== "checkbox" && actions[el.dataset.act]) actions[el.dataset.act](el);
+  });
+  document.addEventListener("change", e => {
+    const el = e.target.closest('[data-act="toggleShop"]');
+    if (el) {
+      const item = state.shopping.find(x => x.id === el.dataset.id);
+      if (item) { item.checked = el.checked; save(); renderShopping(); }
+    }
+  });
+
+  $("langSelect").addEventListener("change", e => changeLanguage(e.target.value));
+  $("btnTimer").addEventListener("click", openTimerModal);
+  $("btnTheme").addEventListener("click", toggleTheme);
+  $("btnVoice").addEventListener("click", startVoiceInput);
+  $("btnGenerate").addEventListener("click", () => { addIngredientFromInput(); renderRecipes(); toast(t("sugUpdated")); });
+  $("btnAddRecipe").addEventListener("click", openRecipeForm);
+  $("btnClearPlan").addEventListener("click", clearPlan);
+  $("btnPlanToShop").addEventListener("click", planToShop);
+  $("btnCopyList").addEventListener("click", copyList);
+  $("btnClearChecked").addEventListener("click", () => { state.shopping = state.shopping.filter(x => !x.checked); save(); renderShopping(); });
+  $("btnAddShop").addEventListener("click", addShop);
+  $("btnAddPantry").addEventListener("click", openPantryForm);
+  $("btnAddPost").addEventListener("click", openPostForm);
+  $("btnCloseModal").addEventListener("click", closeModal);
+  $("ingredientInput").addEventListener("keydown", e => { if (e.key === "Enter") addIngredientFromInput(); });
+  $("shopInput").addEventListener("keydown", e => { if (e.key === "Enter") addShop(); });
+  ["diet", "time", "cuisine"].forEach(id => $(id).addEventListener("change", renderRecipes));
+
+  const navItems = [["recipes", "🍳", "navRecipes"], ["weekly", "📅", "navPlanner"], ["shopping", "🛒", "navShopping"], ["pantry", "📦", "navPantry"], ["community", "👥", "navCommunity"]];
+  $("bottomNav").innerHTML = navItems.map(([id, icon, key]) => `
+    <button class="bottom-btn" data-tab="${id}"><span class="icon" aria-hidden="true">${icon}</span><span data-t="${key}"></span></button>`).join("");
+  document.querySelectorAll(".bottom-btn").forEach(b => b.addEventListener("click", () => tab(b.dataset.tab)));
+
+  applyTheme();
+  renderAll();
+  tab("recipes");
+  if (timerEnd) startTicking();
+});
+</script>
+</body>
+</html>
